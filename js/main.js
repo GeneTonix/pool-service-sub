@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function openLightbox(images, startIndex) {
-    lbImages = images;
+    lbImages = images.map(src => new URL(src, window.location.href).href);
     lbIndex = startIndex;
     lbZoom = 1;
     lbOffsetX = 0;
@@ -297,9 +297,11 @@ document.addEventListener('DOMContentLoaded', function() {
   // Click on main gallery images to open lightbox
   document.querySelectorAll('.product-gallery').forEach(gallery => {
     const mainImgs = gallery.querySelectorAll('.gallery-main img');
-    const imageSrcs = Array.from(mainImgs).map(img => img.src);
+    const imageSrcs = Array.from(mainImgs).map(img => img.getAttribute('src'));
     mainImgs.forEach((img, i) => {
-      img.addEventListener('click', () => openLightbox(imageSrcs, i));
+      img.addEventListener('click', function() {
+        openLightbox(imageSrcs, i);
+      });
     });
   });
 
