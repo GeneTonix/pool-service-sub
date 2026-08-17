@@ -294,12 +294,60 @@ document.addEventListener('DOMContentLoaded', function() {
     updateLightboxTransform();
   }
 
+  /* --- Hover Zoom Popup (like Hover Zoom+ extension) --- */
+  const hoverPopup = document.createElement('div');
+  hoverPopup.className = 'hover-zoom-popup';
+  hoverPopup.innerHTML = '<img src="" alt="Preview">';
+  document.body.appendChild(hoverPopup);
+  const hoverPopupImg = hoverPopup.querySelector('img');
+
+  let hoverTimer = null;
+  let hoverDelay = 200; // ms delay before popup shows
+
+  document.querySelectorAll('.product-gallery').forEach(gallery => {
+    const mainImgs = gallery.querySelectorAll('.gallery-main img');
+    mainImgs.forEach((img) => {
+      const src = img.getAttribute('src');
+
+      img.addEventListener('mouseenter', function() {
+        hoverTimer = setTimeout(function() {
+          hoverPopupImg.src = src;
+          hoverPopup.classList.add('show');
+        }, hoverDelay);
+      });
+
+      img.addEventListener('mouseleave', function() {
+        clearTimeout(hoverTimer);
+        hoverPopup.classList.remove('show');
+      });
+
+      img.addEventListener('mousemove', function(e) {
+        if (!hoverPopup.classList.contains('show')) return;
+        let x = e.clientX + 20;
+        let y = e.clientY + 20;
+        // Flip to left side if popup would go off right edge
+        if (x + 400 > window.innerWidth) {
+          x = e.clientX - 420;
+        }
+        // Keep within bottom edge
+        if (y + 400 > window.innerHeight) {
+          y = window.innerHeight - 410;
+        }
+        if (y < 10) y = 10;
+        hoverPopup.style.left = x + 'px';
+        hoverPopup.style.top = y + 'px';
+      });
+    });
+  });
+
   // Click on main gallery images to open lightbox
   document.querySelectorAll('.product-gallery').forEach(gallery => {
     const mainImgs = gallery.querySelectorAll('.gallery-main img');
     const imageSrcs = Array.from(mainImgs).map(img => img.getAttribute('src'));
     mainImgs.forEach((img, i) => {
       img.addEventListener('click', function() {
+        clearTimeout(hoverTimer);
+        hoverPopup.classList.remove('show');
         openLightbox(imageSrcs, i);
       });
     });
