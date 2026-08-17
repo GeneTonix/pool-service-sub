@@ -299,7 +299,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const mainImgs = gallery.querySelectorAll('.gallery-main img');
     const imageSrcs = Array.from(mainImgs).map(img => img.src);
     mainImgs.forEach((img, i) => {
-      img.style.cursor = 'zoom-in';
       img.addEventListener('click', () => openLightbox(imageSrcs, i));
     });
   });
